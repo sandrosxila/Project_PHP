@@ -1,0 +1,36 @@
+body,html{
+    heigh:100%;
+    width:100%;
+}
+.container{
+    height:100%;
+    width:100%;
+}
+#editor{
+    position: absolute;
+    height: 100%;
+    border-radius:5px;
+}
+#subname{
+    border-radius: 5px;
+    margin-left:22%;
+}
+.row{
+    margin-bottom: 15px;
+}
+#inout{
+    min-height: 350px;
+    display: inline;
+}
+#stdin,#stdout{
+    min-height:150px;
+}
+#stdin{
+    resize: none;
+}
+#stdout{
+    resize: none;
+}
+textarea{
+    border-radius:5px;
+}
