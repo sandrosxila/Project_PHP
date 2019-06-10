@@ -43,8 +43,7 @@ class Database
     }
 
     public function signupUser($email){
-        $stmt = $this->getConnection()
-            ->prepare("SELECT COUNT(email) FROM users WHERE email = :email");
+        $stmt = $this->connection->prepare("SELECT COUNT(email) FROM users WHERE email = :email");
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch();
         return $user ["COUNT(email)"];
@@ -57,9 +56,9 @@ class Database
     }
 
     public function deleteSubmission($id){
-        $sql= "DELETE FROM submissions WHERE id=".$id;
-        print_r($sql);
-        $this->connection->exec($sql);
+        $sql= "DELETE FROM submissions WHERE id=:id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute(['id' => $id]);
     }
 
     public function addSubmission ($id,$name,$script,$language){
@@ -69,16 +68,16 @@ class Database
     }
 
     public function updateSubmission ($id,$script,$language){
-        $sql = "UPDATE submissions SET script='".$script."',lang='".$language."' WHERE id=".$id;
+        $sql = "UPDATE submissions SET script=:script,lang=:lang WHERE id=:id";
         $stmt = $this->connection->prepare($sql);
-        $stmt->execute();
+        $stmt->execute(['script' => $script,'lang' => $language, 'id' => $id]);
     }
 
     public function getSubmissions($id)
     {
-        $sql="SELECT * FROM submissions WHERE user_id=".$id;
+        $sql="SELECT * FROM submissions WHERE user_id=:id";
         $stmt = $this->connection->prepare($sql);
-        $stmt->execute();
+        $stmt->execute(['id' => $id]);
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         return $stmt->fetchAll();
     }

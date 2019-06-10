@@ -9,8 +9,12 @@ session_start();
 $db = new Database();
 
 $router = new Router(new Request);
-$router->get('/', 'index');
-$router->post('/', 'index');
+$router->get('/', function (IRequest $request) use ($db,$router) {
+    return $router->renderOnlyView('index');
+});
+$router->post('/', function (IRequest $request) use ($db,$router) {
+    return $router->renderOnlyView('index');
+});
 $router->get('/profile', 'profile');
 $router->get('/signup', 'signup');
 $router->get('/about', 'about');
