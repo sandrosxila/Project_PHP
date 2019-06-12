@@ -4,6 +4,11 @@
  * Date: 5/5/2019
  * Time: 7:56 PM
  */
+function log_var($var){
+    echo "<pre>";
+    var_dump($var);
+    echo "</pre>";
+}
 
 function redirect($url)
 {

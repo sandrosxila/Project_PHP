@@ -37,3 +37,65 @@ function readFileContents($filename){
     fclose($handle);
     return $contents;
 }
+function renderPageView($body,$page,$db){
+    if(isset($body['Check']))$body['Output']=getOutput($_POST['Script'],$body['Language'],$body['Input']);
+    if(isset($body['submissionName'])) {
+        if ($body['submissionName'] != "") {
+            $id=$_SESSION['currentUser']['id'];
+            $name=$body['submissionName'];
+            $script = $_POST['Script'];
+            $language=$body['Language'];
+            $db->addSubmission($id,$name,$script,$language);
+        }
+    }
+    if(isset($body['needUpdate'])){
+        if($body['needUpdate']=="1"){
+            $id=$body['codeId'];
+            $script=$_POST['Script'];
+            $language=$body['Language'];
+            $db->updateSubmission($id,$script,$language);
+        }
+    }
+    if(isset($_FILES["file"]["tmp_name"]) && $_FILES["file"]["tmp_name"]!=""){
+        $filename=$_FILES["file"]["tmp_name"];
+        $contents = readFileContents($filename);
+    }
+    $buttonUpload = "                    <label for=\"fileUpload\" class=\"btn btn-primary mr-5\">upload</label>
+                    <input type=\"file\" name=\"file\" id=\"fileUpload\" hidden>";
+    $saveAsButton = "                            <input type=\"button\" value=\"save as\" id=\"saveAsButton\" class=\"btn btn-primary\">
+                            <label for=\"compilebutton\" id=\"saveButton\" class=\"btn btn-primary\">save</label>
+                            <input type=\"text\" id=\"subname\" name=\"submissionName\" placeholder=\"enter submission name\">";
+    $compileUpdateButton = "                            <label for=\"compilebutton\" id=\"updateButton\" class=\"btn btn-primary\">update</label>
+                            <input type=\"hidden\" id=\"needUpdate\" name=\"needUpdate\" value=\"0\">
+                            <input type=\"hidden\" name=\"scriptToUpdate\" value=\"1\">
+                            <input type=\"hidden\" name=\"codeId\" value=\"{{codeId}}\">";
+
+    $page = str_replace("{{output}}",isset($body['Output'])?$body['Output']:"",$page);
+    $page = str_replace("{{input}}",isset($body['Input'])?$body['Input']:"",$page);
+    $page = str_replace("{{ButtonUpload}}",isLoggedIn()?$buttonUpload:"",$page);
+    $page = str_replace("{{Buttons}}",isLoggedIn()&&!isset($body['scriptToUpdate'])?$saveAsButton:"{{Buttons}}",$page);
+    $page = str_replace("{{Buttons}}",isLoggedIn()&&isset($body['scriptToUpdate'])?$compileUpdateButton:"{{Buttons}}",$page);
+    $page = str_replace("{{Buttons}}","",$page);
+    $page = str_replace("{{codeId}}",isset($body['codeId'])?$body['codeId']:"",$page);
+    $script="";
+    if(isset($_SESSION['Script']) && $_SESSION['Script']!=""){
+        $script = $_SESSION['Script'];
+        unset($_SESSION['Script']);
+    }
+    else if(isset($_FILES["file"]["tmp_name"]) && $_FILES["file"]["tmp_name"]!=""){
+        $script = $contents;
+    }
+    else {
+        if (isset($_POST['Script'])) {
+            if(isset($_POST['scriptToUpdate']) && !isset($_POST['needUpdate']))
+                $_POST['Script']=htmlentities($_POST['Script']);
+            $script =  $_POST['Script'];
+        }
+    }
+    $page = str_replace("{{script}}",$script,$page);
+    $page = str_replace("{{Check}}",isset($body['Language'])?"1":"0",$page);
+    $page = str_replace("{{Language}}",isset($body['Language'])?$body['Language']:"",$page);
+    $page = str_replace("{{Opt}}",isset($body['Language'])?$body['Language']:"0",$page);
+
+    return $page;
+}

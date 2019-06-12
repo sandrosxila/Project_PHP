@@ -3,17 +3,21 @@ require_once __DIR__ . '/../helpers.php';
 require_once __DIR__ . '/../Request.php';
 require_once __DIR__ . '/../Router.php';
 require_once __DIR__ . '/../db/Database.php';
-
+require_once __DIR__.'/../helperFunctions.php';
 session_start();
 
 $db = new Database();
 
 $router = new Router(new Request);
 $router->get('/', function (IRequest $request) use ($db,$router) {
-    return $router->renderOnlyView('index');
+    $body = $request->getBody();
+    $page = $router->renderOnlyView('index');
+    return renderPageView($body,$page,$db);
 });
 $router->post('/', function (IRequest $request) use ($db,$router) {
-    return $router->renderOnlyView('index');
+    $body = $request->getBody();
+    $page = $router->renderOnlyView('index');
+    return renderPageView($body,$page,$db);
 });
 $router->get('/profile', 'profile');
 $router->get('/signup', 'signup');
